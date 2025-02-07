@@ -1,0 +1,59 @@
+<!--
+ * @Author: zhengyun zy765802997@gmail.com
+ * @Date: 2024-01-07 19:41:18
+ * @LastEditors: zhengyun zy765802997@gmail.com
+ * @LastEditTime: 2024-01-07 21:45:08
+ * @FilePath: /vite-vue-demo/src/test.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebUSB Example</title>
+</head>
+<body>
+    <button id="connectButton">连接读卡器</button>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            try {
+                // navigator.usb.getDevices().then((devices) => {
+                //     devices.forEach((device) => {
+                //         console.log(device.productName); // "Arduino Micro"
+                //         console.log(device.manufacturerName); // "Arduino LLC"
+                //     });
+                // });
+
+                // const device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0xFFFF, productId: 0x5678 }] });
+
+                // 请求连接设备
+                const device = await navigator.usb.requestDevice({ filters: [] });
+                console.log("device:", device);
+                // 打开设备
+                await device.open();
+
+                // 选择配置
+                await device.selectConfiguration(1);
+
+                // 打开一个接口
+                await device.claimInterface(0);
+
+                // 从设备读取数据（示例中为64字节）
+                const result = await device.transferIn(1, 64);
+
+                // 将数据显示在页面上
+                const outputElement = document.getElementById('output');
+                outputElement.innerHTML = `<p>读卡器数据：${new TextDecoder().decode(result.data)}</p>`;
+
+                // 关闭设备
+                await device.close();
+            } catch (error) {
+                console.error('连接读卡器时发生错误:', error);
+            }
+        });
+    </script>
+</body>
+</html>
